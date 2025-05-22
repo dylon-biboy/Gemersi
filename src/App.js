@@ -1,5 +1,362 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
+// Home Section Component with Scroll Effects
+const HomeSection = () => {
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const sectionRef = useRef(null);
+
+  const handleScroll = useCallback(() => {
+    if (sectionRef.current) {
+      const scrollY = window.scrollY;
+      const sectionTop = sectionRef.current.offsetTop;
+      const sectionHeight = sectionRef.current.scrollHeight; // Total scrollable height of the section
+      const viewportHeight = window.innerHeight;
+
+      // Calculate the scroll progress within the *entire* home section's scrollable range
+      // This range is from the top of the section until the end of the last image's display
+      const totalScrollRange = sectionHeight - viewportHeight;
+      let currentScroll = scrollY - sectionTop; // Scroll relative to the top of the section
+
+      if (totalScrollRange > 0) {
+        const progress = Math.max(0, Math.min(1, currentScroll / totalScrollRange));
+        setScrollProgress(progress);
+      } else {
+        setScrollProgress(0); // No scrollable range
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Call once to set initial state
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
+
+  // Define the scroll phases for each image to control timing
+  // Each phase is now 1/3 of the total scroll range (0-1)
+  const image1PhaseEnd = 0.33;
+  const image2PhaseStart = 0.33;
+  const image2PhaseEnd = 0.66;
+  const image3PhaseStart = 0.66;
+  const image3PhaseEnd = 1.0;
+
+  // Calculate individual image progress within their respective phases
+  const image1Progress = Math.min(1, scrollProgress / image1PhaseEnd);
+  const image2Progress = Math.max(0, Math.min(1, (scrollProgress - image2PhaseStart) / (image2PhaseEnd - image2PhaseStart)));
+  const image3Progress = Math.max(0, Math.min(1, (scrollProgress - image3PhaseStart) / (image3PhaseEnd - image3PhaseStart)));
+
+  // Image 1: Fades out and moves up
+  const image1Opacity = 1 - image1Progress;
+  const image1Transform = `translateY(${image1Progress * -50}vh)`; // Moves up 50vh
+
+  // Image 2: Slides from right, ends with 10% gap on left
+  const image2Opacity = image2Progress;
+  const image2Transform = `translateX(${100 - (image2Progress * 100)}%)`;
+
+  // Image 3: Slides from left, positioned 1/10 from right, with tagline */}
+  const image3Opacity = image3Progress;
+  const image3Transform = `translateX(${-100 + (image3Progress * 100)}%)`;
+
+
+  return (
+    <section ref={sectionRef} className="relative w-full min-h-[300vh] overflow-hidden bg-white"> {/* Adjusted min-h to 300vh to ensure content fills the scroll */}
+      {/* Image 1: Full bleed, fades out on scroll */}
+      <div
+        className="absolute top-0 left-0 w-full h-[100vh] flex items-center justify-center transition-opacity duration-500 ease-out"
+        style={{ opacity: image1Opacity, transform: image1Transform }}
+      >
+        <img
+          src="https://placehold.co/1920x1080/000000/FFFFFF?text=Where+Image+Becomes+Iconic"
+          alt="Gemersi Home Image 1 - Iconic"
+          className="w-full h-full object-cover"
+          onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/1920x1080/000000/FFFFFF?text=Where+Image+Becomes+Iconic"; }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center text-center text-white bg-black bg-opacity-40 p-10 max-w-4xl mx-auto">
+          <h1 className="font-serif text-5xl md:text-7xl font-bold leading-tight tracking-wide">
+            Where Image Becomes Iconic
+          </h1>
+        </div>
+      </div>
+
+      {/* Image 2: Slides from right, positioned 1/10 from left, with tagline */}
+      <div
+        className="absolute top-[100vh] left-0 w-full h-[100vh] flex transition-opacity duration-500 ease-out"
+        style={{ opacity: image2Opacity, transform: image2Transform }}
+      >
+        <div className="relative w-full h-full"> {/* Make this relative for absolute child */}
+          <img
+            src="https://placehold.co/1920x1080/1A1A1A/FFFFFF?text=Fashion+Art+Image+2"
+            alt="Gemersi Home Image 2 - Right Aligned"
+            className="w-full h-full object-cover"
+            onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/1920x1080/1A1A1A/FFFFFF?text=Fashion+Art+Image+2"; }}
+          />
+          {/* Text container on the left, now absolute */}
+          <div className="absolute left-0 top-0 bottom-0 flex items-center justify-center text-center text-gray-900 w-24 md:w-32 lg:w-40">
+            <p className="font-serif text-xl font-bold tracking-widest rotate-90 whitespace-nowrap">
+              Artistry in Every Frame
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Image 3: Slides from left, positioned 1/10 from right, with tagline */}
+      <div
+        className="absolute top-[200vh] left-0 w-full h-[100vh] flex transition-opacity duration-500 ease-out"
+        style={{ opacity: image3Opacity, transform: image3Transform }}
+      >
+        <div className="relative w-full h-full"> {/* Make this relative for absolute child */}
+          <img
+            src="https://placehold.co/1920x1080/2A2A2A/FFFFFF?text=Fashion+Art+Image+3"
+            alt="Gemersi Home Image 3 - Left Aligned"
+            className="w-full h-full object-cover"
+            onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/1920x1080/2A2A2A/FFFFFF?text=Fashion+Art+Image+3"; }}
+          />
+          {/* Text container on the right, now absolute */}
+          <div className="absolute right-0 top-0 bottom-0 flex items-center justify-center text-center text-gray-900 w-24 md:w-32 lg:w-40">
+            <p className="font-serif text-xl font-bold tracking-widest rotate-90 whitespace-nowrap">
+              Artistry in Every Frame
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Project Detail View Component
+const ProjectDetailView = ({ project }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const galleryRef = useRef(null);
+
+  useEffect(() => {
+    // Reset index when project changes
+    setCurrentImageIndex(0);
+  }, [project]);
+
+  const goToNextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      (prevIndex + 1) % project.galleryImages.length
+    );
+  };
+
+  const goToPrevImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      (prevIndex - 1 + project.galleryImages.length) % project.galleryImages.length
+    );
+  };
+
+  // Scroll to current image when index changes
+  useEffect(() => {
+    if (galleryRef.current) {
+      // Calculate scroll position based on current image index and image width
+      // This logic needs to consider the responsive widths set by Tailwind classes
+      // We'll approximate based on the largest width for smooth scroll
+      let imageWidth = galleryRef.current.offsetWidth; // Default to full width
+      if (window.innerWidth >= 768) { // md breakpoint
+        imageWidth = galleryRef.current.offsetWidth * 0.4; // calc(40%-1rem) effectively
+      } else if (window.innerWidth >= 640) { // sm breakpoint
+        imageWidth = galleryRef.current.offsetWidth * 0.5; // calc(50%-0.5rem) effectively
+      }
+
+      galleryRef.current.scrollTo({
+        left: currentImageIndex * imageWidth,
+        behavior: 'smooth',
+      });
+    }
+  }, [currentImageIndex]);
+
+
+  if (!project) return null;
+
+  return (
+    <section className="relative w-full min-h-screen flex flex-col items-center justify-start bg-white pt-24">
+      <div className="w-full text-center mb-8 px-6">
+        <p className="font-sans text-sm text-gray-600 mb-2 tracking-wider uppercase">
+          {project.title}
+        </p>
+        <h1 className="font-serif text-4xl md:text-6xl font-bold text-gray-900 leading-tight tracking-wide">
+          {project.title}
+        </h1>
+        <p className="font-sans text-md text-gray-700 mt-4 max-w-3xl mx-auto leading-relaxed">
+          {project.description}
+        </p>
+      </div>
+
+      <div className="relative w-full overflow-hidden px-6"> {/* Added horizontal padding */}
+        <div ref={galleryRef} className="flex overflow-x-scroll snap-x snap-mandatory w-full py-4 space-x-4 custom-scrollbar"> {/* Added space-x-4 for gap */}
+          {project.galleryImages.map((image, index) => (
+            <div key={index} className="flex-shrink-0 w-full sm:w-[calc(50%-0.5rem)] md:w-[calc(40%-1rem)] h-[70vh] snap-start relative"> {/* Adjusted width for responsiveness */}
+              <img
+                src={image}
+                alt={`${project.title} Image ${index + 1}`}
+                className="w-full h-full object-cover"
+                onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/1920x1080/CCCCCC/000000?text=${encodeURIComponent(project.title)}+${index + 1}`; }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Navigation Buttons */}
+        {project.galleryImages.length > 1 && (
+          <>
+            <button
+              onClick={goToPrevImage}
+              className="absolute left-6 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition-all duration-300 z-20"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <button
+              onClick={goToNextImage}
+              className="absolute right-6 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition-all duration-300 z-20"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+          </>
+        )}
+      </div>
+    </section>
+  );
+};
+
+// About Us Section Component
+const AboutUsSection = () => {
+  const teamMembers = [
+    {
+      id: 1,
+      name: 'Dylon Nguyen',
+      role: 'CEO & Project Manager',
+      bio: 'Leading the vision and execution of every project, ensuring artistic integrity and client satisfaction.',
+      imageUrl: 'https://placehold.co/300x500/000000/FFFFFF?text=Dylon+Nguyen+Portrait', // [Hình ảnh chân dung Dylon Nguyen]
+      social: {
+        facebook: '#',
+        instagram: '#',
+        threads: '#',
+        linkedin: '#',
+      }
+    },
+    {
+      id: 2,
+      name: 'Andy',
+      role: 'Photographer & Retoucher',
+      bio: 'Capturing moments with precision and enhancing them with a meticulous eye for detail in post-production.',
+      imageUrl: 'https://placehold.co/300x500/1A1A1A/FFFFFF?text=Andy+Portrait', // [Hình ảnh chân dung Andy]
+      social: {
+        facebook: '#',
+        instagram: '#',
+        threads: '#',
+        linkedin: '#',
+      }
+    },
+    {
+      id: 3,
+      name: 'Stanley',
+      role: 'Creative Art Director',
+      bio: 'Crafting unique visual narratives and guiding the artistic direction to achieve compelling results.',
+      imageUrl: 'https://placehold.co/300x500/2A2A2A/FFFFFF?text=Stanley+Portrait', // [Hình ảnh chân dung Stanley]
+      social: {
+        facebook: '#',
+        instagram: '#',
+        threads: '#',
+        linkedin: '#',
+      }
+    },
+    {
+      id: 4,
+      name: 'Van',
+      role: 'Project Assistant',
+      bio: 'Supporting project coordination and ensuring seamless operations from planning to delivery.',
+      imageUrl: 'https://placehold.co/300x500/3A3A3A/FFFFFF?text=Van+Portrait', // [Hình ảnh chân dung Van]
+      social: {
+        facebook: '#',
+        instagram: '#',
+        threads: '#',
+        linkedin: '#',
+      }
+    },
+    {
+      id: 5,
+      name: 'Andrei',
+      role: 'Designer',
+      bio: 'Bringing concepts to life through innovative graphic and visual design solutions.',
+      imageUrl: 'https://placehold.co/300x500/4A4A4A/FFFFFF?text=Andrei+Portrait', // [Hình ảnh chân dung Andrei]
+      social: {
+        facebook: '#',
+        instagram: '#',
+        threads: '#',
+        linkedin: '#',
+      }
+    },
+    {
+      id: 6,
+      name: 'No Name',
+      role: 'Marketing Executive',
+      bio: 'Strategizing and executing marketing initiatives to expand our reach and connect with new audiences.',
+      imageUrl: 'https://placehold.co/300x500/5A5A5A/FFFFFF?text=No+Name+Portrait', // [Hình ảnh chân dung No Name]
+      social: {
+        facebook: '#',
+        instagram: '#',
+        threads: '#',
+        linkedin: '#',
+      }
+    },
+  ];
+
+  return (
+    <section className="bg-white p-8">
+      <h2 className="font-serif text-5xl font-bold text-gray-900 mb-12 text-center tracking-wide relative">
+        GEMERSI{' '}
+        <span className="font-serif text-red-600 font-light text-3xl absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full whitespace-nowrap">
+          Team
+        </span>
+      </h2>
+      <p className="font-sans text-lg text-gray-700 mb-12 text-center max-w-3xl mx-auto leading-relaxed mt-16"> {/* Added mt-16 to account for the "Team" text */}
+        Gemersi is a collective of passionate artists and visual storytellers dedicated to creating impactful and elegant imagery. We believe in the power of visuals to communicate, inspire, and connect.
+      </p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+        {teamMembers.map((member) => (
+            <React.Fragment key={member.id}>
+                <div className="bg-white text-center hover:shadow-lg transition-shadow duration-300 ease-in-out">
+                    <img
+                        src={member.imageUrl}
+                        alt={member.name}
+                        className="w-full h-auto object-cover aspect-[3/5] grayscale hover:grayscale-0 transition-all duration-300 ease-in-out" // 3x5 ratio, grayscale
+                        onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x500/CCCCCC/000000?text=${encodeURIComponent(member.name)}`; }}
+                    />
+                    <div className="p-4">
+                        <h3 className="font-serif text-xl font-medium text-gray-900 mb-1 tracking-wide">{member.name}</h3>
+                        <p className="font-sans text-red-600 font-light mb-4 text-sm tracking-widest uppercase">{member.role}</p>
+                        <div className="flex justify-center space-x-4">
+                            <a href={member.social.facebook} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33V22H12c5.523 0 10-4.477 10-10z" clipRule="evenodd" />
+                                </svg>
+                            </a>
+                            <a href={member.social.instagram} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path fillRule="evenodd" d="M12 0C8.74 0 8.333.014 7.053.072 5.775.132 4.92.333 4.042.645A5.867 5.867 0 00.645 4.042C.333 4.92.132 5.775.072 7.053.014 8.333 0 8.74 0 12s.014 3.667.072 4.947c.06 1.278.261 2.133.573 3.012a5.867 5.867 0 003.407 3.407c.879.312 1.734.513 3.012.573C8.333 23.986 8.74 24 12 24s3.667-.014 4.947-.072c1.278-.06 2.133-.261 3.012-.573a5.867 5.867 0 003.407-3.407c.312-.879.513-1.734.573-3.012.058-1.278.072-1.685.072-4.947s-.014-3.667-.072-4.947c-.06-1.278-.261-2.133-.573-3.012A5.867 5.867 0 0019.958.645C19.08.333 18.225.132 16.947.072 15.667.014 15.26 0 12 0zm0 2.16c3.2 0 3.585.016 4.85.071 1.17.055 1.8.245 2.227.418.66.275 1.15.617 1.604 1.071a4.002 4.002 0 011.071 1.604c.173.427.363 1.057.418 2.227.055 1.265.071 1.65.071 4.85s-.016 3.585-.071 4.85c-.055 1.17-.245 1.8-.418 2.227a4.002 4.002 0 01-1.071 1.604c-.454.454-.796.844-1.604 1.071-.427.173-1.057.363-2.227.418-1.265.055-1.65.071-4.85.071s-3.585-.016-4.85-.071c-1.17-.055-1.8-.245-2.227-.418a4.002 4.002 0 01-1.604-1.071 4.002 4.002 0 01-1.071-1.604c-.173-.427-.363-1.057-.418-2.227C2.16 15.585 2.16 15.2 2.16 12s.016-3.585.071-4.85c.055-1.17.245-1.8.418-2.227a4.002 4.002 0 011.071-1.604A4.002 4.002 0 014.042 2.6c.427-.173 1.057-.363 2.227-.418C8.333 2.16 8.74 2.16 12 2.16zm0 3.635a6.24 6.24 0 100 12.48 6.24 6.24 0 000-12.48zm0 10.16a3.925 3.925 0 110-7.85 3.925 3.925 0 010 7.85zm5.072-10.45a1.176 1.176 0 100 2.352 1.176 1.176 0 000-2.352z" clipRule="evenodd" />
+                                </svg>
+                            </a>
+                            <a href={member.social.threads} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
+                                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zm-1 2h2v12h-2V6zm-3 2h2v8H8V8zm8 0h2v8h-2V8z" clipRule="evenodd" />
+                                </svg>
+                            </a>
+                            <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
+                                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.044-1.852-3.044-1.853 0-2.136 1.445-2.136 2.951v5.662H9.554V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.062 2.062 2.062 0 012.063-2.062c1.132 0 2.064.93 2.064 2.062A2.062 2.062 0 015.337 7.433zm-.044 13.019H2.713V9h2.58ZM22.224 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.453c.979 0 1.772-.773 1.772-1.729V1.729C24 .774 23.207 0 22.224 0z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </React.Fragment>
+        ))}
+      </div>
+    </section>
+  );
+};
+
 // Main App component
 const App = () => {
   const [activeSection, setActiveSection] = useState('home'); // State to manage active section
@@ -285,367 +642,6 @@ const App = () => {
         </div>
       </footer>
     </div>
-  );
-};
-
-// Home Section Component with Scroll Effects
-const HomeSection = () => {
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const sectionRef = useRef(null);
-
-  const handleScroll = useCallback(() => {
-    if (sectionRef.current) {
-      const scrollY = window.scrollY;
-      const sectionTop = sectionRef.current.offsetTop;
-      const sectionHeight = sectionRef.current.scrollHeight; // Total scrollable height of the section
-      const viewportHeight = window.innerHeight;
-
-      // Calculate the scroll progress within the *entire* home section's scrollable range
-      // This range is from the top of the section until the end of the last image's display
-      const totalScrollRange = sectionHeight - viewportHeight;
-      let currentScroll = scrollY - sectionTop; // Scroll relative to the top of the section
-
-      if (totalScrollRange > 0) {
-        const progress = Math.max(0, Math.min(1, currentScroll / totalScrollRange));
-        setScrollProgress(progress);
-      } else {
-        setScrollProgress(0); // No scrollable range
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Call once to set initial state
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
-
-  // Define the scroll phases for each image to control timing
-  // Each phase is now 1/3 of the total scroll range (0-1)
-  const image1PhaseEnd = 0.33;
-  const image2PhaseStart = 0.33;
-  const image2PhaseEnd = 0.66;
-  const image3PhaseStart = 0.66;
-  const image3PhaseEnd = 1.0;
-
-  // Calculate individual image progress within their respective phases
-  const image1Progress = Math.min(1, scrollProgress / image1PhaseEnd);
-  const image2Progress = Math.max(0, Math.min(1, (scrollProgress - image2PhaseStart) / (image2PhaseEnd - image2PhaseStart)));
-  const image3Progress = Math.max(0, Math.min(1, (scrollProgress - image3PhaseStart) / (image3PhaseEnd - image3PhaseStart)));
-
-  // Image 1: Fades out and moves up
-  const image1Opacity = 1 - image1Progress;
-  const image1Transform = `translateY(${image1Progress * -50}vh)`; // Moves up 50vh
-
-  // Image 2: Slides from right, ends with 10% gap on left
-  const image2Opacity = image2Progress;
-  const image2Transform = `translateX(${100 - (image2Progress * 100)}%)`;
-
-  // Image 3: Slides from left, positioned 1/10 from right, with tagline */}
-  const image3Opacity = image3Progress;
-  const image3Transform = `translateX(${-100 + (image3Progress * 100)}%)`;
-
-
-  return (
-    <section ref={sectionRef} className="relative w-full min-h-[300vh] overflow-hidden bg-white"> {/* Adjusted min-h to 300vh to ensure content fills the scroll */}
-      {/* Image 1: Full bleed, fades out on scroll */}
-      <div
-        className="absolute top-0 left-0 w-full h-[100vh] flex items-center justify-center transition-opacity duration-500 ease-out"
-        style={{ opacity: image1Opacity, transform: image1Transform }}
-      >
-        <img
-          src="https://placehold.co/1920x1080/000000/FFFFFF?text=Where+Image+Becomes+Iconic"
-          alt="Gemersi Home Image 1 - Iconic"
-          className="w-full h-full object-cover"
-          onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/1920x1080/000000/FFFFFF?text=Where+Image+Becomes+Iconic"; }}
-        />
-        <div className="absolute inset-0 flex items-center justify-center text-center text-white bg-black bg-opacity-40 p-10 max-w-4xl mx-auto">
-          <h1 className="font-serif text-5xl md:text-7xl font-bold leading-tight tracking-wide">
-            Where Image Becomes Iconic
-          </h1>
-        </div>
-      </div>
-
-      {/* Image 2: Slides from right, positioned 1/10 from left, with tagline */}
-      <div
-        className="absolute top-[100vh] left-0 w-full h-[100vh] flex items-center justify-end transition-opacity duration-500 ease-out"
-        style={{ opacity: image2Opacity, transform: image2Transform }}
-      >
-        <img
-          src="https://placehold.co/1920x1080/1A1A1A/FFFFFF?text=Fashion+Art+Image+2"
-          alt="Gemersi Home Image 2 - Right Aligned"
-          className="w-[90%] h-full object-cover" // Occupies 90% width
-          onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/1920x1080/1A1A1A/FFFFFF?text=Fashion+Art+Image+2"; }}
-        />
-        <div className="absolute left-0 w-[10%] h-full flex items-center justify-center text-center text-gray-900">
-          <p className="font-serif text-xl font-bold tracking-widest rotate-90 whitespace-nowrap">
-            Artistry in Every Frame
-          </p>
-        </div>
-      </div>
-
-      {/* Image 3: Slides from left, positioned 1/10 from right, with tagline */}
-      <div
-        className="absolute top-[200vh] left-0 w-full h-[100vh] flex items-center justify-start transition-opacity duration-500 ease-out"
-        style={{ opacity: image3Opacity, transform: image3Transform }}
-      >
-        <img
-          src="https://placehold.co/1920x1080/2A2A2A/FFFFFF?text=Fashion+Art+Image+3"
-          alt="Gemersi Home Image 3 - Left Aligned"
-          className="w-[90%] h-full object-cover" // Occupies 90% width
-          onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/1920x1080/2A2A2A/FFFFFF?text=Fashion+Art+Image+3"; }}
-          />
-        <div className="absolute right-0 w-[10%] h-full flex items-center justify-center text-center text-gray-900">
-          <p className="font-serif text-xl font-bold tracking-widest rotate-90 whitespace-nowrap">
-            Artistry in Every Frame
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Project Detail View Component
-const ProjectDetailView = ({ project }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const galleryRef = useRef(null);
-
-  useEffect(() => {
-    // Reset index when project changes
-    setCurrentImageIndex(0);
-  }, [project]);
-
-  const goToNextImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      (prevIndex + 1) % project.galleryImages.length
-    );
-  };
-
-  const goToPrevImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      (prevIndex - 1 + project.galleryImages.length) % project.galleryImages.length
-    );
-  };
-
-  // Scroll to current image when index changes
-  useEffect(() => {
-    if (galleryRef.current) {
-      // Calculate scroll position based on current image index and image width
-      // Each image is now 40% of the container width (100% / 2.5 images)
-      const imageWidth = galleryRef.current.offsetWidth * 0.4; // 40% of the gallery container's width
-      galleryRef.current.scrollTo({
-        left: currentImageIndex * imageWidth,
-        behavior: 'smooth',
-      });
-    }
-  }, [currentImageIndex]);
-
-
-  if (!project) return null;
-
-  return (
-    <section className="relative w-full min-h-screen flex flex-col items-center justify-start bg-white pt-24">
-      <div className="w-full text-center mb-8 px-6">
-        <p className="font-sans text-sm text-gray-600 mb-2 tracking-wider uppercase">
-          {project.title}
-        </p>
-        <h1 className="font-serif text-4xl md:text-6xl font-bold text-gray-900 leading-tight tracking-wide">
-          {project.title}
-        </h1>
-        <p className="font-sans text-md text-gray-700 mt-4 max-w-3xl mx-auto leading-relaxed">
-          {project.description}
-        </p>
-      </div>
-
-      <div className="relative w-full overflow-hidden px-6"> {/* Added horizontal padding */}
-        <div ref={galleryRef} className="flex overflow-x-scroll snap-x snap-mandatory w-full py-4 space-x-4 custom-scrollbar"> {/* Added space-x-4 for gap */}
-          {project.galleryImages.map((image, index) => (
-            <div key={index} className="flex-shrink-0 w-[calc(40%-1rem)] h-[70vh] snap-start relative"> {/* Adjusted width for 2.5 images + gap */}
-              <img
-                src={image}
-                alt={`${project.title} Image ${index + 1}`}
-                className="w-full h-full object-cover"
-                onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/1920x1080/CCCCCC/000000?text=${encodeURIComponent(project.title)}+${index + 1}`; }}
-              />
-            </div>
-          ))}
-        </div>
-
-        {/* Custom scrollbar for better visibility (Tailwind doesn't have direct scrollbar styling) */}
-        <style jsx>{`
-          .custom-scrollbar::-webkit-scrollbar {
-            height: 8px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #555;
-          }
-        `}</style>
-
-        {/* Navigation Buttons */}
-        {project.galleryImages.length > 1 && (
-          <>
-            <button
-              onClick={goToPrevImage}
-              className="absolute left-6 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition-all duration-300 z-20"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
-            </button>
-            <button
-              onClick={goToNextImage}
-              className="absolute right-6 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition-all duration-300 z-20"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
-            </button>
-          </>
-        )}
-      </div>
-    </section>
-  );
-};
-
-// About Us Section Component
-const AboutUsSection = () => {
-  const teamMembers = [
-    {
-      id: 1,
-      name: 'Dylon Nguyen',
-      role: 'CEO & Project Manager',
-      bio: 'Leading the vision and execution of every project, ensuring artistic integrity and client satisfaction.',
-      imageUrl: 'https://placehold.co/300x500/000000/FFFFFF?text=Dylon+Nguyen+Portrait', // [Hình ảnh chân dung Dylon Nguyen]
-      social: {
-        facebook: '#',
-        instagram: '#',
-        threads: '#',
-        linkedin: '#',
-      }
-    },
-    {
-      id: 2,
-      name: 'Andy',
-      role: 'Photographer & Retoucher',
-      bio: 'Capturing moments with precision and enhancing them with a meticulous eye for detail in post-production.',
-      imageUrl: 'https://placehold.co/300x500/1A1A1A/FFFFFF?text=Andy+Portrait', // [Hình ảnh chân dung Andy]
-      social: {
-        facebook: '#',
-        instagram: '#',
-        threads: '#',
-        linkedin: '#',
-      }
-    },
-    {
-      id: 3,
-      name: 'Stanley',
-      role: 'Creative Art Director',
-      bio: 'Crafting unique visual narratives and guiding the artistic direction to achieve compelling results.',
-      imageUrl: 'https://placehold.co/300x500/2A2A2A/FFFFFF?text=Stanley+Portrait', // [Hình ảnh chân dung Stanley]
-      social: {
-        facebook: '#',
-        instagram: '#',
-        threads: '#',
-        linkedin: '#',
-      }
-    },
-    {
-      id: 4,
-      name: 'Van',
-      role: 'Project Assistant',
-      bio: 'Supporting project coordination and ensuring seamless operations from planning to delivery.',
-      imageUrl: 'https://placehold.co/300x500/3A3A3A/FFFFFF?text=Van+Portrait', // [Hình ảnh chân dung Van]
-      social: {
-        facebook: '#',
-        instagram: '#',
-        threads: '#',
-        linkedin: '#',
-      }
-    },
-    {
-      id: 5,
-      name: 'Andrei',
-      role: 'Designer',
-      bio: 'Bringing concepts to life through innovative graphic and visual design solutions.',
-      imageUrl: 'https://placehold.co/300x500/4A4A4A/FFFFFF?text=Andrei+Portrait', // [Hình ảnh chân dung Andrei]
-      social: {
-        facebook: '#',
-        instagram: '#',
-        threads: '#',
-        linkedin: '#',
-      }
-    },
-    {
-      id: 6,
-      name: 'No Name',
-      role: 'Marketing Executive',
-      bio: 'Strategizing and executing marketing initiatives to expand our reach and connect with new audiences.',
-      imageUrl: 'https://placehold.co/300x500/5A5A5A/FFFFFF?text=No+Name+Portrait', // [Hình ảnh chân dung No Name]
-      social: {
-        facebook: '#',
-        instagram: '#',
-        threads: '#',
-        linkedin: '#',
-      }
-    },
-  ];
-
-  return (
-    <section className="bg-white p-8">
-      <h2 className="font-serif text-5xl font-bold text-gray-900 mb-12 text-center tracking-wide relative">
-        GEMERSI{' '}
-        <span className="font-serif text-red-600 font-light text-3xl absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full whitespace-nowrap">
-          Team
-        </span>
-      </h2>
-      <p className="font-sans text-lg text-gray-700 mb-12 text-center max-w-3xl mx-auto leading-relaxed mt-16"> {/* Added mt-16 to account for the "Team" text */}
-        Gemersi is a collective of passionate artists and visual storytellers dedicated to creating impactful and elegant imagery. We believe in the power of visuals to communicate, inspire, and connect.
-      </p>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-        {teamMembers.map((member) => (
-            <div key={member.id} className="bg-white text-center hover:shadow-lg transition-shadow duration-300 ease-in-out">
-              <img
-                src={member.imageUrl}
-                alt={member.name}
-                className="w-full h-auto object-cover aspect-[3/5] grayscale hover:grayscale-0 transition-all duration-300 ease-in-out" // 3x5 ratio, grayscale
-                onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x500/CCCCCC/000000?text=${encodeURIComponent(member.name)}`; }}
-              />
-              <div className="p-4">
-                <h3 className="font-serif text-xl font-medium text-gray-900 mb-1 tracking-wide">{member.name}</h3>
-                <p className="font-sans text-red-600 font-light mb-4 text-sm tracking-widest uppercase">{member.role}</p>
-                {/* Bio is removed as per Artclass style, but can be added back if needed */}
-                <div className="flex justify-center space-x-4">
-                  <a href={member.social.facebook} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33V22H12c5.523 0 10-4.477 10-10z" clipRule="evenodd" />
-                    </svg>
-                  </a>
-                  <a href={member.social.instagram} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path fillRule="evenodd" d="M12 0C8.74 0 8.333.014 7.053.072 5.775.132 4.92.333 4.042.645A5.867 5.867 0 00.645 4.042C.333 4.92.132 5.775.072 7.053.014 8.333 0 8.74 0 12s.014 3.667.072 4.947c.06 1.278.261 2.133.573 3.012a5.867 5.867 0 003.407 3.407c.879.312 1.734.513 3.012.573C8.333 23.986 8.74 24 12 24s3.667-.014 4.947-.072c1.278-.06 2.133-.261 3.012-.573a5.867 5.867 0 003.407-3.407c.312-.879.513-1.734.573-3.012.058-1.278.072-1.685.072-4.947s-.014-3.667-.072-4.947c-.06-1.278-.261-2.133-.573-3.012A5.867 5.867 0 0019.958.645C19.08.333 18.225.132 16.947.072 15.667.014 15.26 0 12 0zm0 2.16c3.2 0 3.585.016 4.85.071 1.17.055 1.8.245 2.227.418.66.275 1.15.617 1.604 1.071a4.002 4.002 0 011.071 1.604c.173.427.363 1.057.418 2.227.055 1.265.071 1.65.071 4.85s-.016 3.585-.071 4.85c-.055 1.17-.245 1.8-.418 2.227a4.002 4.002 0 01-1.071 1.604c-.454.454-.796.844-1.604 1.071-.427.173-1.057.363-2.227.418-1.265.055-1.65.071-4.85.071s-3.585-.016-4.85-.071c-1.17-.055-1.8-.245-2.227-.418a4.002 4.002 0 01-1.604-1.071 4.002 4.002 0 01-1.071-1.604c-.173-.427-.363-1.057-.418-2.227C2.16 15.585 2.16 15.2 2.16 12s.016-3.585.071-4.85c.055-1.17.245-1.8.418-2.227a4.002 4.002 0 011.071-1.604A4.002 4.002 0 014.042 2.6c.427-.173 1.057-.363 2.227-.418C8.333 2.16 8.74 2.16 12 2.16zm0 3.635a6.24 6.24 0 100 12.48 6.24 6.24 0 000-12.48zm0 10.16a3.925 3.925 0 110-7.85 3.925 3.925 0 010 7.85zm5.072-10.45a1.176 1.176 0 100 2.352 1.176 1.176 0 000-2.352z" clipRule="evenodd" />
-                    </svg>
-                  </a>
-                  <a href={member.social.threads} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-                    <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zm-1 2h2v12h-2V6zm-3 2h2v8H8V8zm8 0h2v8h-2V8z" clipRule="evenodd" />
-                    </svg>
-                  </a>
-                  <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-                    <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.044-1.852-3.044-1.853 0-2.136 1.445-2.136 2.951v5.662H9.554V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.062 2.062 2.062 0 012.063-2.062c1.132 0 2.064.93 2.064 2.062A2.062 2.062 0 015.337 7.433zm-.044 13.019H2.713V9h2.58ZM22.224 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.453c.979 0 1.772-.773 1.772-1.729V1.729C24 .774 23.207 0 22.224 0z" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </div>
-        ))}
-      </div>
-    </section>
   );
 };
 
