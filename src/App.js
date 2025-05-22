@@ -341,7 +341,7 @@ const HomeSection = () => {
   const image2Opacity = image2Progress;
   const image2Transform = `translateX(${100 - (image2Progress * 100)}%)`;
 
-  // Image 3: Slides from left, ends with 10% gap on right
+  // Image 3: Slides from left, positioned 1/10 from right, with tagline */}
   const image3Opacity = image3Progress;
   const image3Transform = `translateX(${-100 + (image3Progress * 100)}%)`;
 
@@ -631,12 +631,12 @@ const AboutUsSection = () => {
                     </svg>
                   </a>
                   <a href={member.social.threads} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zm-1 2h2v12h-2V6zm-3 2h2v8H8V8zm8 0h2v8h-2V8z" clipRule="evenodd" />
                     </svg>
                   </a>
                   <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.044-1.852-3.044-1.853 0-2.136 1.445-2.136 2.951v5.662H9.554V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.062 2.062 2.062 0 012.063-2.062c1.132 0 2.064.93 2.064 2.062A2.062 2.062 0 015.337 7.433zm-.044 13.019H2.713V9h2.58ZM22.224 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.453c.979 0 1.772-.773 1.772-1.729V1.729C24 .774 23.207 0 22.224 0z" />
                     </svg>
                   </a>
@@ -648,53 +648,5 @@ const AboutUsSection = () => {
     </section>
   );
 };
-
-// Contact Section Component
-const ContactSection = () => (
-  <section className="bg-white p-8 text-center">
-    <h2 className="font-serif text-5xl font-bold text-gray-900 mb-12 tracking-wide">
-      Contact
-    </h2>
-    <div className="max-w-xl mx-auto bg-white p-8 border border-gray-200">
-      <div className="space-y-6 text-gray-700 text-lg">
-        <p className="flex items-center justify-center space-x-3">
-          <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M.05 3.555L11.999 15.5 23.95 3.555 12 0 .05 3.555zM0 4.05v15.9L8.3 12.05 0 4.05zm24 0L15.7 12.05 24 19.95V4.05zM12 17.5l-8.3-8.3-3.7 3.7V24h24v-7.05l-3.7-3.7L12 17.5z"/></svg>
-          <span>info@gemersi.com</span>
-        </p>
-        <p className="flex items-center justify-center space-x-3">
-          <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02L6.62 10.79z"/></svg>
-          <span>+84 123 456 789</span>
-        </p>
-        <p className="flex items-center justify-center space-x-3">
-          <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
-          <span>123 Art Street, District 1, Ho Chi Minh City, Vietnam</span>
-        </p>
-      </div>
-      <div className="flex justify-center space-x-6 mt-8">
-        <a href="#" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33V22H12c5.523 0 10-4.477 10-10z" clipRule="evenodd" />
-          </svg>
-        </a>
-        <a href="#" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path fillRule="evenodd" d="M12 0C8.74 0 8.333.014 7.053.072 5.775.132 4.92.333 4.042.645A5.867 5.867 0 00.645 4.042C.333 4.92.132 5.775.072 7.053.014 8.333 0 8.74 0 12s.014 3.667.072 4.947c.06 1.278.261 2.133.573 3.012a5.867 5.867 0 003.407 3.407c.879.312 1.734.513 3.012.573C8.333 23.986 8.74 24 12 24s3.667-.014 4.947-.072c1.278-.06 2.133-.261 3.012-.573a5.867 5.867 0 003.407-3.407c.312-.879.513-1.734.573-3.012.058-1.278.072-1.685.072-4.947s-.014-3.667-.072-4.947c-.06-1.278-.261-2.133-.573-3.012A5.867 5.867 0 0019.958.645C19.08.333 18.225.132 16.947.072 15.667.014 15.26 0 12 0zm0 2.16c3.2 0 3.585.016 4.85.071 1.17.055 1.8.245 2.227.418.66.275 1.15.617 1.604 1.071a4.002 4.002 0 011.071 1.604c.173.427.363 1.057.418 2.227.055 1.265.071 1.65.071 4.85s-.016 3.585-.071 4.85c-.055 1.17-.245 1.8-.418 2.227a4.002 4.002 0 01-1.071 1.604c-.454.454-.796.844-1.604 1.071-.427.173-1.057.363-2.227.418-1.265.055-1.65.071-4.85.071s-3.585-.016-4.85-.071c-1.17-.055-1.8-.245-2.227-.418a4.002 4.002 0 01-1.604-1.071 4.002 4.002 0 01-1.071-1.604c-.173-.427-.363-1.057-.418-2.227C2.16 15.585 2.16 15.2 2.16 12s.016-3.585.071-4.85c.055-1.17.245-1.8.418-2.227a4.002 4.002 0 011.071-1.604A4.002 4.002 0 014.042 2.6c.427-.173 1.057-.363 2.227-.418C8.333 2.16 8.74 2.16 12 2.16zm0 3.635a6.24 6.24 0 100 12.48 6.24 6.24 0 000-12.48zm0 10.16a3.925 3.925 0 110-7.85 3.925 3.925 0 010 7.85zm5.072-10.45a1.176 1.176 0 100 2.352 1.176 1.176 0 000-2.352z" clipRule="evenodd" />
-          </svg>
-        </a>
-        <a href="#" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-          {/* Threads Icon */}
-          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zm-1 2h2v12h-2V6zm-3 2h2v8H8V8zm8 0h2v8h-2V8z" clipRule="evenodd" />
-          </svg>
-        </a>
-        <a href="#" target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.044-1.852-3.044-1.853 0-2.136 1.445-2.136 2.951v5.662H9.554V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.062 2.062 2.062 0 012.063-2.062c1.132 0 2.064.93 2.064 2.062A2.062 2.062 0 015.337 7.433zm-.044 13.019H2.713V9h2.58ZM22.224 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.453c.979 0 1.772-.773 1.772-1.729V1.729C24 .774 23.207 0 22.224 0z" />
-          </svg>
-        </a>
-      </div>
-    </div>
-  </section>
-);
 
 export default App;
