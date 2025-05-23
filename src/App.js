@@ -1,5 +1,111 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
+// Project data structure with gallery images - Defined once at the top level
+const projectCategories = {
+  Production: [
+    {
+      id: 'prod-1',
+      title: 'Editorial Photography',
+      description: 'Capturing the essence of fashion and lifestyle for leading publications, focusing on narrative and visual impact.',
+      galleryImages: [
+        'https://placehold.co/1920x1080/000000/FFFFFF?text=Fashion+Editorial+Shot+1', // [Hình ảnh chụp biên tập thời trang 1]
+        'https://placehold.co/1920x1080/1A1A1A/E0E0E0?text=Fashion+Editorial+Shot+2', // [Hình ảnh chụp biên tập thời trang 2]
+        'https://placehold.co/1920x1080/2A2A2A/E0E0E0?text=Fashion+Editorial+Shot+3', // [Hình ảnh chụp biên tập thời trang 3]
+        'https://placehold.co/1920x1080/3A3A3A/E0E0E0?text=Fashion+Editorial+Shot+4', // [Hình ảnh chụp biên tập thời trang 4]
+      ],
+    },
+    {
+      id: 'prod-2',
+      title: 'Commercial Campaigns',
+      description: 'Visually compelling campaigns that elevate brands, engage audiences, and drive market presence through innovative imagery.',
+      galleryImages: [
+        'https://placehold.co/1920x1080/4A4A4A/E0E0E0?text=Commercial+Campaign+1', // [Hình ảnh chiến dịch thương mại 1]
+        'https://placehold.co/1920x1080/5A5A5A/E0E0E0?text=Commercial+Campaign+2', // [Hình ảnh chiến dịch thương mại 2]
+        'https://placehold.co/1920x1080/6A6A6A/E0E0E0?text=Commercial+Campaign+3', // [Hình ảnh chiến dịch thương mại 3]
+      ],
+    },
+    {
+      id: 'prod-3',
+      title: 'Product Showcase',
+      description: 'Highlighting product details and aesthetics with precision and creativity, ensuring every feature is presented artfully.',
+      galleryImages: [
+        'https://placehold.co/1920x1080/7A7A7A/E0E0E0?text=Product+Showcase+1', // [Hình ảnh trưng bày sản phẩm 1]
+        'https://placehold.co/1920x1080/8A8A8A/E0E0E0?text=Product+Showcase+2', // [Hình ảnh trưng bày sản phẩm 2]
+      ],
+    },
+  ],
+  'Art Direction': [
+    {
+      id: 'art-1',
+      title: 'Concept Development',
+      description: 'Crafting unique visual concepts that define the narrative and aesthetic direction of each project, from inception to execution.',
+      galleryImages: [
+        'https://placehold.co/1920x1080/9A9A9A/E0E0E0?text=Art+Direction+Concept+1', // [Hình ảnh phát triển ý tưởng nghệ thuật 1]
+        'https://placehold.co/1920x1080/A0A0A0/E0E0E0?text=Art+Direction+Concept+2', // [Hình ảnh phát triển ý tưởng nghệ thuật 2]
+      ],
+    },
+    {
+      id: 'art-2',
+      title: 'Set Design & Styling',
+      description: 'Transforming spaces and styling elements to create the perfect visual backdrop, enhancing the artistic integrity of the shoot.',
+      galleryImages: [
+        'https://placehold.co/1920x1080/B0B0B0/E0E0E0?text=Set+Design+Styling+1', // [Hình ảnh thiết kế và tạo kiểu bối cảnh 1]
+        'https://placehold.co/1920x1080/C0C0C0/E0E0E0?text=Set+Design+Styling+2', // [Hình ảnh thiết kế và tạo kiểu bối cảnh 2]
+      ],
+    },
+    {
+      id: 'art-3',
+      title: 'Visual Storytelling',
+      description: 'Guiding the visual flow to tell a compelling story through a series of images, ensuring emotional resonance and artistic depth.',
+      galleryImages: [
+        'https://placehold.co/1920x1080/D0D0D0/E0E0E0?text=Visual+Storytelling+1', // [Hình ảnh kể chuyện bằng hình ảnh 1]
+        'https://placehold.co/1920x1080/E0E0E0/333333?text=Visual+Storytelling+2', // [Hình ảnh kể chuyện bằng hình ảnh 2]
+      ],
+    },
+  ],
+  Branding: [
+    {
+      id: 'brand-1',
+      title: 'Brand Identity Visuals',
+      description: 'Developing visual assets that embody a brand\'s core values and aesthetic, creating a cohesive and memorable identity.',
+      galleryImages: [
+        'https://placehold.co/1920x1080/333333/E0E0E0?text=Brand+Identity+Visuals+1', // [Hình ảnh nhận diện thương hiệu 1]
+        'https://placehold.co/1920x1080/444444/E0E0E0?text=Brand+Identity+Visuals+2', // [Hình ảnh nhận diện thương hiệu 2]
+      ],
+    },
+    {
+      id: 'brand-2',
+      title: 'Brand Guideline Creation',
+      description: 'Establishing comprehensive visual guidelines for consistent brand representation across all platforms and media.',
+      galleryImages: [
+        'https://placehold.co/1920x1080/555555/E0E0E0?text=Brand+Guideline+Creation+1', // [Hình ảnh tạo hướng dẫn thương hiệu 1]
+        'https://placehold.co/1920x1080/666666/E0E0E0?text=Brand+Guideline+Creation+2', // [Hình ảnh tạo hướng dẫn thương hiệu 2]
+      ],
+    },
+  ],
+  Design: [
+    {
+      id: 'design-1',
+      title: 'Graphic Design for Print',
+      description: 'Creating stunning print materials that reflect high-end design principles, from editorial layouts to luxury brochures.',
+      galleryImages: [
+        'https://placehold.co/1920x1080/777777/E0E0E0?text=Graphic+Design+Print+1', // [Hình ảnh thiết kế đồ họa cho in ấn 1]
+        'https://placehold.co/1920x1080/888888/E0E0E0?text=Graphic+Design+Print+2', // [Hình ảnh thiết kế đồ họa cho in ấn 2]
+      ],
+    },
+    {
+      id: 'design-2',
+      title: 'Digital Asset Design',
+      description: 'Designing engaging visual content for digital platforms and online presence, optimized for modern user experiences.',
+      galleryImages: [
+        'https://placehold.co/1920x1080/999999/E0E0E0?text=Digital+Asset+Design+1', // [Hình ảnh thiết kế tài sản số 1]
+        'https://placehold.co/1920x1080/AAAAAA/E0E0E0?text=Digital+Asset+Design+2', // [Hình ảnh thiết kế tài sản số 2]
+      ],
+    },
+  ],
+};
+
+
 // Home Section Component with Scroll Effects
 const HomeSection = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -80,43 +186,37 @@ const HomeSection = () => {
 
       {/* Image 2: Slides from right, positioned 1/10 from left, with tagline */}
       <div
-        className="absolute top-[100vh] left-0 w-full h-[100vh] flex transition-opacity duration-500 ease-out"
+        className="absolute top-[100vh] left-0 w-full h-[100vh] flex items-center justify-end transition-opacity duration-500 ease-out"
         style={{ opacity: image2Opacity, transform: image2Transform }}
       >
-        <div className="relative w-full h-full"> {/* Make this relative for absolute child */}
-          <img
-            src="https://placehold.co/1920x1080/1A1A1A/FFFFFF?text=Fashion+Art+Image+2"
-            alt="Gemersi Home Image 2 - Right Aligned"
-            className="w-full h-full object-cover"
-            onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/1920x1080/1A1A1A/FFFFFF?text=Fashion+Art+Image+2"; }}
-          />
-          {/* Text container on the left, now absolute */}
-          <div className="absolute left-0 top-0 bottom-0 flex items-center justify-center text-center text-gray-900 w-24 md:w-32 lg:w-40">
-            <p className="font-serif text-xl font-bold tracking-widest rotate-90 whitespace-nowrap">
-              Artistry in Every Frame
-            </p>
-          </div>
+        <img
+          src="https://placehold.co/1920x1080/1A1A1A/FFFFFF?text=Fashion+Art+Image+2"
+          alt="Gemersi Home Image 2 - Right Aligned"
+          className="w-[90%] h-full object-cover" // Occupies 90% width
+          onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/1920x1080/1A1A1A/FFFFFF?text=Fashion+Art+Image+2"; }}
+        />
+        <div className="absolute left-0 w-[10%] h-full flex items-center justify-center text-center text-gray-900">
+          <p className="font-serif text-xl font-bold tracking-widest rotate-90 whitespace-nowrap">
+            Artistry in Every Frame
+          </p>
         </div>
       </div>
 
       {/* Image 3: Slides from left, positioned 1/10 from right, with tagline */}
       <div
-        className="absolute top-[200vh] left-0 w-full h-[100vh] flex transition-opacity duration-500 ease-out"
+        className="absolute top-[200vh] left-0 w-full h-[100vh] flex items-center justify-start transition-opacity duration-500 ease-out"
         style={{ opacity: image3Opacity, transform: image3Transform }}
       >
-        <div className="relative w-full h-full"> {/* Make this relative for absolute child */}
-          <img
-            src="https://placehold.co/1920x1080/2A2A2A/FFFFFF?text=Fashion+Art+Image+3"
-            alt="Gemersi Home Image 3 - Left Aligned"
-            className="w-full h-full object-cover"
-            onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/1920x1080/2A2A2A/FFFFFF?text=Fashion+Art+Image+3"; }}
+        <img
+          src="https://placehold.co/1920x1080/2A2A2A/FFFFFF?text=Fashion+Art+Image+3"
+          alt="Gemersi Home Image 3 - Left Aligned"
+          className="w-[90%] h-full object-cover" // Occupies 90% width
+          onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/1920x1080/2A2A2A/FFFFFF?text=Fashion+Art+Image+3"; }}
           />
-          {/* Text container on the right, now absolute */}
-          <div className="absolute right-0 top-0 bottom-0 flex items-center justify-center text-center text-gray-900 w-24 md:w-32 lg:w-40">
-            <p className="font-serif text-xl font-bold tracking-widest rotate-90 whitespace-nowrap">
-              Artistry in Every Frame
-            </p>
-          </div>
+        <div className="absolute right-0 w-[10%] h-full flex items-center justify-center text-center text-gray-900">
+          <p className="font-serif text-xl font-bold tracking-widest rotate-90 whitespace-nowrap">
+            Artistry in Every Frame
+          </p>
         </div>
       </div>
     </section>
@@ -149,15 +249,8 @@ const ProjectDetailView = ({ project }) => {
   useEffect(() => {
     if (galleryRef.current) {
       // Calculate scroll position based on current image index and image width
-      // This logic needs to consider the responsive widths set by Tailwind classes
-      // We'll approximate based on the largest width for smooth scroll
-      let imageWidth = galleryRef.current.offsetWidth; // Default to full width
-      if (window.innerWidth >= 768) { // md breakpoint
-        imageWidth = galleryRef.current.offsetWidth * 0.4; // calc(40%-1rem) effectively
-      } else if (window.innerWidth >= 640) { // sm breakpoint
-        imageWidth = galleryRef.current.offsetWidth * 0.5; // calc(50%-0.5rem) effectively
-      }
-
+      // Each image is now 40% of the container width (100% / 2.5 images)
+      const imageWidth = galleryRef.current.offsetWidth * 0.4; // 40% of the gallery container's width
       galleryRef.current.scrollTo({
         left: currentImageIndex * imageWidth,
         behavior: 'smooth',
@@ -185,7 +278,7 @@ const ProjectDetailView = ({ project }) => {
       <div className="relative w-full overflow-hidden px-6"> {/* Added horizontal padding */}
         <div ref={galleryRef} className="flex overflow-x-scroll snap-x snap-mandatory w-full py-4 space-x-4 custom-scrollbar"> {/* Added space-x-4 for gap */}
           {project.galleryImages.map((image, index) => (
-            <div key={index} className="flex-shrink-0 w-full sm:w-[calc(50%-0.5rem)] md:w-[calc(40%-1rem)] h-[70vh] snap-start relative"> {/* Adjusted width for responsiveness */}
+            <div key={index} className="flex-shrink-0 w-[calc(40%-1rem)] h-[70vh] snap-start relative"> {/* Adjusted width for 2.5 images + gap */}
               <img
                 src={image}
                 alt={`${project.title} Image ${index + 1}`}
@@ -195,6 +288,24 @@ const ProjectDetailView = ({ project }) => {
             </div>
           ))}
         </div>
+
+        {/* Custom scrollbar for better visibility (Tailwind doesn't have direct scrollbar styling) */}
+        <style jsx>{`
+          .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+          }
+        `}</style>
 
         {/* Navigation Buttons */}
         {project.galleryImages.length > 1 && (
@@ -228,10 +339,7 @@ const AboutUsSection = () => {
       bio: 'Leading the vision and execution of every project, ensuring artistic integrity and client satisfaction.',
       imageUrl: 'https://placehold.co/300x500/000000/FFFFFF?text=Dylon+Nguyen+Portrait', // [Hình ảnh chân dung Dylon Nguyen]
       social: {
-        facebook: '#',
-        instagram: '#',
-        threads: '#',
-        linkedin: '#',
+        // Removed social media links
       }
     },
     {
@@ -241,10 +349,7 @@ const AboutUsSection = () => {
       bio: 'Capturing moments with precision and enhancing them with a meticulous eye for detail in post-production.',
       imageUrl: 'https://placehold.co/300x500/1A1A1A/FFFFFF?text=Andy+Portrait', // [Hình ảnh chân dung Andy]
       social: {
-        facebook: '#',
-        instagram: '#',
-        threads: '#',
-        linkedin: '#',
+        // Removed social media links
       }
     },
     {
@@ -254,10 +359,7 @@ const AboutUsSection = () => {
       bio: 'Crafting unique visual narratives and guiding the artistic direction to achieve compelling results.',
       imageUrl: 'https://placehold.co/300x500/2A2A2A/FFFFFF?text=Stanley+Portrait', // [Hình ảnh chân dung Stanley]
       social: {
-        facebook: '#',
-        instagram: '#',
-        threads: '#',
-        linkedin: '#',
+        // Removed social media links
       }
     },
     {
@@ -267,10 +369,7 @@ const AboutUsSection = () => {
       bio: 'Supporting project coordination and ensuring seamless operations from planning to delivery.',
       imageUrl: 'https://placehold.co/300x500/3A3A3A/FFFFFF?text=Van+Portrait', // [Hình ảnh chân dung Van]
       social: {
-        facebook: '#',
-        instagram: '#',
-        threads: '#',
-        linkedin: '#',
+        // Removed social media links
       }
     },
     {
@@ -280,10 +379,7 @@ const AboutUsSection = () => {
       bio: 'Bringing concepts to life through innovative graphic and visual design solutions.',
       imageUrl: 'https://placehold.co/300x500/4A4A4A/FFFFFF?text=Andrei+Portrait', // [Hình ảnh chân dung Andrei]
       social: {
-        facebook: '#',
-        instagram: '#',
-        threads: '#',
-        linkedin: '#',
+        // Removed social media links
       }
     },
     {
@@ -293,10 +389,7 @@ const AboutUsSection = () => {
       bio: 'Strategizing and executing marketing initiatives to expand our reach and connect with new audiences.',
       imageUrl: 'https://placehold.co/300x500/5A5A5A/FFFFFF?text=No+Name+Portrait', // [Hình ảnh chân dung No Name]
       social: {
-        facebook: '#',
-        instagram: '#',
-        threads: '#',
-        linkedin: '#',
+        // Removed social media links
       }
     },
   ];
@@ -315,47 +408,52 @@ const AboutUsSection = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
         {teamMembers.map((member) => (
-            <React.Fragment key={member.id}>
-                <div className="bg-white text-center hover:shadow-lg transition-shadow duration-300 ease-in-out">
-                    <img
-                        src={member.imageUrl}
-                        alt={member.name}
-                        className="w-full h-auto object-cover aspect-[3/5] grayscale hover:grayscale-0 transition-all duration-300 ease-in-out" // 3x5 ratio, grayscale
-                        onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x500/CCCCCC/000000?text=${encodeURIComponent(member.name)}`; }}
-                    />
-                    <div className="p-4">
-                        <h3 className="font-serif text-xl font-medium text-gray-900 mb-1 tracking-wide">{member.name}</h3>
-                        <p className="font-sans text-red-600 font-light mb-4 text-sm tracking-widest uppercase">{member.role}</p>
-                        <div className="flex justify-center space-x-4">
-                            <a href={member.social.facebook} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33V22H12c5.523 0 10-4.477 10-10z" clipRule="evenodd" />
-                                </svg>
-                            </a>
-                            <a href={member.social.instagram} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path fillRule="evenodd" d="M12 0C8.74 0 8.333.014 7.053.072 5.775.132 4.92.333 4.042.645A5.867 5.867 0 00.645 4.042C.333 4.92.132 5.775.072 7.053.014 8.333 0 8.74 0 12s.014 3.667.072 4.947c.06 1.278.261 2.133.573 3.012a5.867 5.867 0 003.407 3.407c.879.312 1.734.513 3.012.573C8.333 23.986 8.74 24 12 24s3.667-.014 4.947-.072c1.278-.06 2.133-.261 3.012-.573a5.867 5.867 0 003.407-3.407c.312-.879.513-1.734.573-3.012.058-1.278.072-1.685.072-4.947s-.014-3.667-.072-4.947c-.06-1.278-.261-2.133-.573-3.012A5.867 5.867 0 0019.958.645C19.08.333 18.225.132 16.947.072 15.667.014 15.26 0 12 0zm0 2.16c3.2 0 3.585.016 4.85.071 1.17.055 1.8.245 2.227.418.66.275 1.15.617 1.604 1.071a4.002 4.002 0 011.071 1.604c.173.427.363 1.057.418 2.227.055 1.265.071 1.65.071 4.85s-.016 3.585-.071 4.85c-.055 1.17-.245 1.8-.418 2.227a4.002 4.002 0 01-1.071 1.604c-.454.454-.796.844-1.604 1.071-.427.173-1.057.363-2.227.418-1.265.055-1.65.071-4.85.071s-3.585-.016-4.85-.071c-1.17-.055-1.8-.245-2.227-.418a4.002 4.002 0 01-1.604-1.071 4.002 4.002 0 01-1.071-1.604c-.173-.427-.363-1.057-.418-2.227C2.16 15.585 2.16 15.2 2.16 12s.016-3.585.071-4.85c.055-1.17.245-1.8.418-2.227a4.002 4.002 0 011.071-1.604A4.002 4.002 0 014.042 2.6c.427-.173 1.057-.363 2.227-.418C8.333 2.16 8.74 2.16 12 2.16zm0 3.635a6.24 6.24 0 100 12.48 6.24 6.24 0 000-12.48zm0 10.16a3.925 3.925 0 110-7.85 3.925 3.925 0 010 7.85zm5.072-10.45a1.176 1.176 0 100 2.352 1.176 1.176 0 000-2.352z" clipRule="evenodd" />
-                                </svg>
-                            </a>
-                            <a href={member.social.threads} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-                                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zm-1 2h2v12h-2V6zm-3 2h2v8H8V8zm8 0h2v8h-2V8z" clipRule="evenodd" />
-                                </svg>
-                            </a>
-                            <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-red-600 transition duration-300">
-                                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.044-1.852-3.044-1.853 0-2.136 1.445-2.136 2.951v5.662H9.554V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.062 2.062 2.062 0 012.063-2.062c1.132 0 2.064.93 2.064 2.062A2.062 2.062 0 015.337 7.433zm-.044 13.019H2.713V9h2.58ZM22.224 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.453c.979 0 1.772-.773 1.772-1.729V1.729C24 .774 23.207 0 22.224 0z" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </React.Fragment>
+            <div key={member.id} className="bg-white text-center hover:shadow-lg transition-shadow duration-300 ease-in-out">
+              <img
+                src={member.imageUrl}
+                alt={member.name}
+                className="w-full h-auto object-cover aspect-[3/5] grayscale hover:grayscale-0 transition-all duration-300 ease-in-out" // 3x5 ratio, grayscale
+                onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/300x500/CCCCCC/000000?text=${encodeURIComponent(member.name)}`; }}
+              />
+              <div className="p-4">
+                <h3 className="font-serif text-xl font-medium text-gray-900 mb-1 tracking-wide">{member.name}</h3>
+                <p className="font-sans text-red-600 font-light mb-4 text-sm tracking-widest uppercase">{member.role}</p>
+                {/* Removed social media links as requested */}
+              </div>
+            </div>
         ))}
       </div>
     </section>
   );
 };
+
+// Contact Section Component
+const ContactSection = () => (
+  <section className="bg-white p-8 text-center">
+    <h2 className="font-serif text-5xl font-bold text-gray-900 mb-12 tracking-wide">
+      Contact
+    </h2>
+    <div className="max-w-xl mx-auto bg-white p-8 border border-gray-200">
+      <div className="space-y-6 text-gray-700 text-lg">
+        <p className="flex items-center justify-center space-x-3">
+          <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M.05 3.555L11.999 15.5 23.95 3.555 12 0 .05 3.555zM0 4.05v15.9L8.3 12.05 0 4.05zm24 0L15.7 12.05 24 19.95V4.05zM12 17.5l-8.3-8.3-3.7 3.7V24h24v-7.05l-3.7-3.7L12 17.5z"/></svg>
+          <span>info@gemersi.com</span>
+        </p>
+        <p className="flex items-center justify-center space-x-3">
+          <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02L6.62 10.79z"/></svg>
+          <span>+84 123 456 789</span>
+        </p>
+        <p className="flex items-center justify-center space-x-3">
+          <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+          <span>123 Art Street, District 1, Ho Chi Minh City, Vietnam</span>
+        </p>
+      </div>
+      <div className="flex justify-center space-x-6 mt-8">
+        {/* Removed social media links as requested */}
+      </div>
+    </div>
+  </section>
+);
 
 // Main App component
 const App = () => {
@@ -363,111 +461,6 @@ const App = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for mobile menu
   const [activeProjectCategory, setActiveProjectCategory] = useState(null); // State for project category hover
   const [selectedProject, setSelectedProject] = useState(null); // State for selected project detail
-
-  // Project data structure with gallery images
-  const projectCategories = {
-    Production: [
-      {
-        id: 'prod-1',
-        title: 'Editorial Photography',
-        description: 'Capturing the essence of fashion and lifestyle for leading publications, focusing on narrative and visual impact.',
-        galleryImages: [
-          'https://placehold.co/1920x1080/000000/FFFFFF?text=Fashion+Editorial+Shot+1', // [Hình ảnh chụp biên tập thời trang 1]
-          'https://placehold.co/1920x1080/1A1A1A/E0E0E0?text=Fashion+Editorial+Shot+2', // [Hình ảnh chụp biên tập thời trang 2]
-          'https://placehold.co/1920x1080/2A2A2A/E0E0E0?text=Fashion+Editorial+Shot+3', // [Hình ảnh chụp biên tập thời trang 3]
-          'https://placehold.co/1920x1080/3A3A3A/E0E0E0?text=Fashion+Editorial+Shot+4', // [Hình ảnh chụp biên tập thời trang 4]
-        ],
-      },
-      {
-        id: 'prod-2',
-        title: 'Commercial Campaigns',
-        description: 'Visually compelling campaigns that elevate brands, engage audiences, and drive market presence through innovative imagery.',
-        galleryImages: [
-          'https://placehold.co/1920x1080/4A4A4A/E0E0E0?text=Commercial+Campaign+1', // [Hình ảnh chiến dịch thương mại 1]
-          'https://placehold.co/1920x1080/5A5A5A/E0E0E0?text=Commercial+Campaign+2', // [Hình ảnh chiến dịch thương mại 2]
-          'https://placehold.co/1920x1080/6A6A6A/E0E0E0?text=Commercial+Campaign+3', // [Hình ảnh chiến dịch thương mại 3]
-        ],
-      },
-      {
-        id: 'prod-3',
-        title: 'Product Showcase',
-        description: 'Highlighting product details and aesthetics with precision and creativity, ensuring every feature is presented artfully.',
-        galleryImages: [
-          'https://placehold.co/1920x1080/7A7A7A/E0E0E0?text=Product+Showcase+1', // [Hình ảnh trưng bày sản phẩm 1]
-          'https://placehold.co/1920x1080/8A8A8A/E0E0E0?text=Product+Showcase+2', // [Hình ảnh trưng bày sản phẩm 2]
-        ],
-      },
-    ],
-    'Art Direction': [
-      {
-        id: 'art-1',
-        title: 'Concept Development',
-        description: 'Crafting unique visual concepts that define the narrative and aesthetic direction of each project, from inception to execution.',
-        galleryImages: [
-          'https://placehold.co/1920x1080/9A9A9A/E0E0E0?text=Art+Direction+Concept+1', // [Hình ảnh phát triển ý tưởng nghệ thuật 1]
-          'https://placehold.co/1920x1080/A0A0A0/E0E0E0?text=Art+Direction+Concept+2', // [Hình ảnh phát triển ý tưởng nghệ thuật 2]
-        ],
-      },
-      {
-        id: 'art-2',
-        title: 'Set Design & Styling',
-        description: 'Transforming spaces and styling elements to create the perfect visual backdrop, enhancing the artistic integrity of the shoot.',
-        galleryImages: [
-          'https://placehold.co/1920x1080/B0B0B0/E0E0E0?text=Set+Design+Styling+1', // [Hình ảnh thiết kế và tạo kiểu bối cảnh 1]
-          'https://placehold.co/1920x1080/C0C0C0/E0E0E0?text=Set+Design+Styling+2', // [Hình ảnh thiết kế và tạo kiểu bối cảnh 2]
-        ],
-      },
-      {
-        id: 'art-3',
-        title: 'Visual Storytelling',
-        description: 'Guiding the visual flow to tell a compelling story through a series of images, ensuring emotional resonance and artistic depth.',
-        galleryImages: [
-          'https://placehold.co/1920x1080/D0D0D0/E0E0E0?text=Visual+Storytelling+1', // [Hình ảnh kể chuyện bằng hình ảnh 1]
-          'https://placehold.co/1920x1080/E0E0E0/333333?text=Visual+Storytelling+2', // [Hình ảnh kể chuyện bằng hình ảnh 2]
-        ],
-      },
-    ],
-    Branding: [
-      {
-        id: 'brand-1',
-        title: 'Brand Identity Visuals',
-        description: 'Developing visual assets that embody a brand\'s core values and aesthetic, creating a cohesive and memorable identity.',
-        galleryImages: [
-          'https://placehold.co/1920x1080/333333/E0E0E0?text=Brand+Identity+Visuals+1', // [Hình ảnh nhận diện thương hiệu 1]
-          'https://placehold.co/1920x1080/444444/E0E0E0?text=Brand+Identity+Visuals+2', // [Hình ảnh nhận diện thương hiệu 2]
-        ],
-      },
-      {
-        id: 'brand-2',
-        title: 'Brand Guideline Creation',
-        description: 'Establishing comprehensive visual guidelines for consistent brand representation across all platforms and media.',
-        galleryImages: [
-          'https://placehold.co/1920x1080/555555/E0E0E0?text=Brand+Guideline+Creation+1', // [Hình ảnh tạo hướng dẫn thương hiệu 1]
-          'https://placehold.co/1920x1080/666666/E0E0E0?text=Brand+Guideline+Creation+2', // [Hình ảnh tạo hướng dẫn thương hiệu 2]
-        ],
-      },
-    ],
-    Design: [
-      {
-        id: 'design-1',
-        title: 'Graphic Design for Print',
-        description: 'Creating stunning print materials that reflect high-end design principles, from editorial layouts to luxury brochures.',
-        galleryImages: [
-          'https://placehold.co/1920x1080/777777/E0E0E0?text=Graphic+Design+Print+1', // [Hình ảnh thiết kế đồ họa cho in ấn 1]
-          'https://placehold.co/1920x1080/888888/E0E0E0?text=Graphic+Design+Print+2', // [Hình ảnh thiết kế đồ họa cho in ấn 2]
-        ],
-      },
-      {
-        id: 'design-2',
-        title: 'Digital Asset Design',
-        description: 'Designing engaging visual content for digital platforms and online presence, optimized for modern user experiences.',
-        galleryImages: [
-          'https://placehold.co/1920x1080/999999/E0E0E0?text=Digital+Asset+Design+1', // [Hình ảnh thiết kế tài sản số 1]
-          'https://placehold.co/1920x1080/AAAAAA/E0E0E0?text=Digital+Asset+Design+2', // [Hình ảnh thiết kế tài sản số 2]
-        ],
-      },
-    ],
-  };
 
   // Function to handle navigation to project details
   const handleProjectClick = (project) => {
